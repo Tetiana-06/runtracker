@@ -1,0 +1,33 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  sonar:
+    name: Тести та статичний аналіз
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Встановити залежності
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Запустити тести з покриттям
+        working-directory: backend
+        run: pytest --cov=app --cov-report=xml:coverage.xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

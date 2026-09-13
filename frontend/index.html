@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RunTracker — тренування, плани, знос кросівок</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header class="masthead">
+      <div class="masthead__title">
+        <h1>RunTracker</h1>
+        <p>Плани підготовки, темп, пульсові зони та ресурс кросівок в одному місці.</p>
+      </div>
+      <div class="masthead__runner" v-if="runner">
+        <span class="runner-name">{{ runner.name }}</span>
+        <span class="runner-meta">{{ levelLabel }} · {{ runner.weekly_volume_km }} км/тиждень</span>
+      </div>
+    </header>
+
+    <div class="lane-rule"></div>
+
+    <p v-if="error" class="notice notice--error">{{ error }}</p>
+    <p v-if="loading" class="notice">Завантаження даних…</p>
+
+    <nav class="tabs">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        :class="['tab', { 'tab--active': activeTab === tab.id }]"
+        @click="activeTab = tab.id"
+      >{{ tab.label }}</button>
+    </nav>
+
+    <main v-if="runner">
+      <section v-show="activeTab === 'log'" class="panel">
+        <div class="stats">
+          <div class="stat">
+            <span class="stat__value">{{ insights.total_km || 0 }}</span>
+            <span class="stat__label">кілометрів усього</span>
+          </div>
+          <div class="stat">
+            <span class="stat__value">{{ insights.total_runs || 0 }}</span>
+            <span class="stat__label">тренувань записано</span>
+          </div>
+          <div class="stat">
+            <span class="stat__value">{{ trendLabel }}</span>
+            <span class="stat__label">динаміка обсягу</span>
+          </div>
+        </div>
+
+        <form class="form" @submit.prevent="addRun">
+          <label>Дистанція, км<input v-model.number="newRun.distance_km" type="number" step="0.1" min="0.5" required /></label>
+          <label>Час, хв<input v-model.number="newRun.duration_min" type="number" step="1" min="1" required /></label>
+          <label>Середній пульс<input v-model.number="newRun.avg_hr" type="number" min="60" max="230" /></label>
+          <label>Тип
+            <select v-model="newRun.workout_type">
+              <option value="easy">Легкий</option>
+              <option value="long">Довгий</option>
+              <option value="tempo">Темповий</option>
+              <option value="intervals">Інтервали</option>
+              <option value="race">Забіг</option>
+            </select>
+          </label>
+          <label>Кросівки
+            <select v-model="newRun.shoe_id">
+              <option :value="null">Без прив'язки</option>
+              <option v-for="shoe in shoes" :key="shoe.id" :value="shoe.id">{{ shoe.model }}</option>
+            </select>
+          </label>
+          <button class="button" type="submit">Записати тренування</button>
+        </form>
+
+        <table class="table" v-if="runs.length">
+          <thead>
+            <tr><th>Дата</th><th>Км</th><th>Час</th><th>Темп</th><th>Пульс</th><th>Тип</th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="run in runs" :key="run.id">
+              <td>{{ run.run_date }}</td>
+              <td>{{ run.distance_km }}</td>
+              <td>{{ formatDuration(run.duration_sec) }}</td>
+              <td>{{ formatPace(run) }}</td>
+              <td>{{ run.avg_hr || '—' }}</td>
+              <td>{{ typeLabels[run.workout_type] }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-else class="empty">Ще немає тренувань. Запишіть перше — аналітика з'явиться одразу.</p>
+      </section>
+
+      <section v-show="activeTab === 'plan'" class="panel">
+        <form class="form form--inline" @submit.prevent="buildPlan">
+          <label>Дистанція
+            <select v-model.number="planRequest.target_distance_km">
+              <option :value="5">5 км</option>
+              <option :value="10">10 км</option>
+              <option :value="21.0975">Півмарафон</option>
+            </select>
+          </label>
+          <label>Тижнів<input v-model.number="planRequest.weeks" type="number" min="4" max="24" /></label>
+          <button class="button" type="submit">Згенерувати план</button>
+        </form>
+
+        <div class="weeks" v-if="plan.length">
+          <article v-for="week in plan" :key="week.week" :class="['week', 'week--' + week.phase]">
+            <header>
+              <span class="week__number">Тиждень {{ week.week }}</span>
+              <span class="week__volume">{{ week.total_km }} км</span>
+            </header>
+            <ul>
+              <li v-for="workout in week.workouts" :key="workout.day">
+                {{ workout.description }} — {{ workout.distance_km }} км
+              </li>
+            </ul>
+            <footer>{{ phaseLabels[week.phase] }}</footer>
+          </article>
+        </div>
+        <p v-else class="empty">Оберіть дистанцію та кількість тижнів, щоб побудувати план.</p>
+      </section>
+
+      <section v-show="activeTab === 'gear'" class="panel">
+        <form class="form form--inline" @submit.prevent="addShoe">
+          <label>Модель<input v-model="newShoe.model" type="text" required /></label>
+          <label>Категорія
+            <select v-model="newShoe.category">
+              <option value="daily">Щоденні</option>
+              <option value="tempo">Темпові</option>
+              <option value="trail">Трейлові</option>
+              <option value="race">Стартові</option>
+            </select>
+          </label>
+          <label>Пробіг, км<input v-model.number="newShoe.mileage_km" type="number" min="0" /></label>
+          <button class="button" type="submit">Додати пару</button>
+        </form>
+
+        <div class="gear" v-if="gear.items && gear.items.length">
+          <article v-for="item in gear.items" :key="item.shoe_id" class="gear__item">
+            <div class="gear__head">
+              <span class="gear__model">{{ item.model }}</span>
+              <span :class="['badge', 'badge--' + item.status]">{{ statusLabels[item.status] }}</span>
+            </div>
+            <div class="wear">
+              <div class="wear__bar" :style="{ width: Math.min(item.wear_percent, 100) + '%' }"></div>
+            </div>
+            <p class="gear__meta">{{ item.mileage_km }} / {{ item.limit_km }} км · {{ item.wear_percent }}% ресурсу</p>
+            <p class="gear__message">{{ item.message }}</p>
+          </article>
+        </div>
+        <p v-else class="empty">Додайте пару кросівок, щоб відстежувати їхній пробіг.</p>
+      </section>
+
+      <section v-show="activeTab === 'zones'" class="panel">
+        <table class="table">
+          <thead><tr><th>Зона</th><th>Назва</th><th>Пульс</th><th>Призначення</th></tr></thead>
+          <tbody>
+            <tr v-for="zone in zones" :key="zone.zone">
+              <td>{{ zone.zone }}</td>
+              <td>{{ zone.name }}</td>
+              <td>{{ zone.lower_hr }}–{{ zone.upper_hr }}</td>
+              <td>{{ zone.purpose }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2 class="subhead">Тижневі обсяги</h2>
+        <div class="bars" v-if="weekly.length">
+          <div v-for="week in weekly" :key="week.week_start" class="bar">
+            <div class="bar__fill" :style="{ height: barHeight(week.total_km) }"></div>
+            <span class="bar__label">{{ shortDate(week.week_start) }}</span>
+            <span class="bar__value">{{ week.total_km }}</span>
+          </div>
+        </div>
+        <p v-else class="empty">Зведення з'явиться після кількох записаних тренувань.</p>
+      </section>
+    </main>
+
+    <p v-else-if="!loading" class="empty">
+      Профіль бігуна не знайдено. Запустіть <code>python seed.py</code>, щоб створити демо-дані.
+    </p>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

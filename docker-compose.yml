@@ -1,0 +1,37 @@
+# Інфраструктура для лабораторної роботи:
+#   db        — PostgreSQL для застосунку
+#   sonarqube — локальний SonarQube Community (альтернатива SonarCloud)
+#
+# Запуск лише бази:        docker compose up -d db
+# Запуск бази + Sonar:     docker compose --profile sonar up -d
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: runtracker-db
+    environment:
+      POSTGRES_USER: runtracker
+      POSTGRES_PASSWORD: runtracker
+      POSTGRES_DB: runtracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: sonarqube
+    profiles: ["sonar"]
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_logs:/opt/sonarqube/logs
+      - sonar_ext:/opt/sonarqube/extensions
+
+volumes:
+  pgdata:
+  sonar_data:
+  sonar_logs:
+  sonar_ext:
