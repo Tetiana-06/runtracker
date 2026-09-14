@@ -1,4 +1,9 @@
-"""Генератор індивідуальних планів підготовки до забігів 5 км / 10 км / 21 км."""
+"""Генератор індивідуальних планів підготовки до забігів 5 км / 10 км / 21 км.
+
+ВЕРСІЯ «ПІСЛЯ» (Лаб.1, Завд.4).
+Застосовані техніки: Guard Clauses, Extract Method, Replace Nested Conditional
+with Lookup Table. Поведінка ідентична, усі тести проходять без змін.
+"""
 
 WORKOUT_LIBRARY = {
     "easy": "Легкий біг у 2-й зоні",
@@ -9,7 +14,12 @@ WORKOUT_LIBRARY = {
     "rest": "Відпочинок",
 }
 
+SESSIONS_BY_LEVEL = {"beginner": 3, "intermediate": 4, "advanced": 5}
+INJURY_SESSIONS = 3
+DEFAULT_SESSIONS = 5
 TAPER_FACTOR = 0.6
+RECOVERY_FACTOR = 0.8
+WEEKLY_PROGRESSION_KM = 0.8
 
 
 def base_long_run_km(target_distance_km: float) -> float:
@@ -23,80 +33,71 @@ def base_long_run_km(target_distance_km: float) -> float:
     return 14.0
 
 
-def generate_training_plan(
-    runner: dict, target_distance_km: float, weeks: int
-) -> list[dict]:
-    """Будує потижневий план тренувань.
+def sessions_per_week(runner: dict) -> int:
+    """Кількість тренувань на тиждень: травми мають пріоритет над рівнем."""
+    if runner.get("has_injury_history"):
+        return INJURY_SESSIONS
+    return SESSIONS_BY_LEVEL.get(runner.get("level"), DEFAULT_SESSIONS)
 
-    УВАГА (Лаб.1, Завд.4): метод свідомо написаний «драбинкою» if-else —
-    це основний кандидат на рефакторинг (Cognitive Complexity ≈ 20).
-    """
+
+def week_shape(week: int, weeks: int, long_run_km: float) -> tuple[str, float]:
+    """Фаза тижня та довжина довгого бігу в ньому."""
+    if week > weeks - 2:
+        return "taper", round(long_run_km * TAPER_FACTOR, 1)
+
+    distance = round(long_run_km + week * WEEKLY_PROGRESSION_KM, 1)
+    if week % 4 == 0:
+        return "recovery", round(distance * RECOVERY_FACTOR, 1)
+    return "build", distance
+
+
+def session_profile(session: int, level: str, phase: str) -> tuple[str, float]:
+    """Тип тренування та його частка від довгого бігу тижня."""
+    if session == 0:
+        return "easy", 0.5
+    if session == 2:
+        return "long", 1.0
+    if session == 1:
+        if level == "beginner":
+            return "easy", 0.45
+        return ("tempo", 0.6) if phase == "build" else ("recovery", 0.4)
+    if phase == "build" and level == "advanced":
+        return "intervals", 0.55
+    return "easy", 0.5
+
+
+def build_workout(session: int, level: str, phase: str, long_run_km: float) -> dict:
+    """Одне тренування дня."""
+    workout_type, share = session_profile(session, level, phase)
+    return {
+        "day": session + 1,
+        "type": workout_type,
+        "description": WORKOUT_LIBRARY[workout_type],
+        "distance_km": round(long_run_km * share, 1),
+    }
+
+
+def generate_training_plan(runner: dict, target_distance_km: float, weeks: int) -> list[dict]:
+    """Будує потижневий план тренувань."""
+    if not runner or weeks <= 0:
+        return []
+
+    sessions = sessions_per_week(runner)
+    level = runner.get("level", "beginner")
+    long_run = base_long_run_km(target_distance_km)
+
     plan = []
-    if runner is not None:
-        if weeks > 0:
-            if runner.get("has_injury_history"):
-                sessions_per_week = 3
-            else:
-                if runner.get("level") == "beginner":
-                    sessions_per_week = 3
-                else:
-                    if runner.get("level") == "intermediate":
-                        sessions_per_week = 4
-                    else:
-                        sessions_per_week = 5
-            long_run = base_long_run_km(target_distance_km)
-            for week in range(1, weeks + 1):
-                workouts = []
-                if week > weeks - 2:
-                    week_long_run = round(long_run * TAPER_FACTOR, 1)
-                    phase = "taper"
-                else:
-                    week_long_run = round(long_run + week * 0.8, 1)
-                    phase = "build"
-                    if week % 4 == 0:
-                        week_long_run = round(week_long_run * 0.8, 1)
-                        phase = "recovery"
-                for session in range(sessions_per_week):
-                    if session == 0:
-                        workout_type = "easy"
-                        share = 0.5
-                    elif session == 1:
-                        if runner.get("level") == "beginner":
-                            workout_type = "easy"
-                            share = 0.45
-                        elif phase == "build":
-                            workout_type = "tempo"
-                            share = 0.6
-                        else:
-                            workout_type = "recovery"
-                            share = 0.4
-                    elif session == 2:
-                        workout_type = "long"
-                        share = 1.0
-                    elif phase == "build" and runner.get("level") == "advanced":
-                        workout_type = "intervals"
-                        share = 0.55
-                    else:
-                        workout_type = "easy"
-                        share = 0.5
-                    workouts.append(
-                        {
-                            "day": session + 1,
-                            "type": workout_type,
-                            "description": WORKOUT_LIBRARY[workout_type],
-                            "distance_km": round(week_long_run * share, 1),
-                        }
-                    )
-                plan.append(
-                    {
-                        "week": week,
-                        "phase": phase,
-                        "total_km": round(sum(w["distance_km"] for w in workouts), 1),
-                        "workouts": workouts,
-                    }
-                )
-        else:
-            return []
+    for week in range(1, weeks + 1):
+        phase, week_long_run = week_shape(week, weeks, long_run)
+        workouts = [build_workout(i, level, phase, week_long_run) for i in range(sessions)]
+        plan.append(
+            {
+                "week": week,
+                "phase": phase,
+                "total_km": round(sum(w["distance_km"] for w in workouts), 1),
+                "workouts": workouts,
+            }
+        )
     return plan
 
 

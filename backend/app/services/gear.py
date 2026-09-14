@@ -1,4 +1,9 @@
-"""Облік зносу бігового взуття та попередження про заміну."""
+"""Облік зносу бігового взуття та попередження про заміну.
+
+ВЕРСІЯ «ПІСЛЯ» (Лаб.1, Завд.4).
+Застосовані техніки: Guard Clauses, Extract Method, винесення порогів у
+конфігураційну таблицю. Поведінка ідентична, усі тести проходять без змін.
+"""
 
 SHOE_LIMITS = {
     "daily": 700,
@@ -8,6 +13,17 @@ SHOE_LIMITS = {
 }
 
 DEFAULT_LIMIT_KM = 650
+
+WEAR_THRESHOLDS = (
+    (1.0, "replace", "Ресурс вичерпано: амортизація не захищає суглоби, замініть пару"),
+    (0.9, "critical", "Залишилось менше 10% ресурсу, плануйте покупку нової пари"),
+    (0.75, "warning", "Пара відпрацювала більшу частину ресурсу, стежте за відчуттями"),
+)
+
+HIGH_VOLUME_KM = 60
+INJURY_FACTOR = 0.85
+HIGH_VOLUME_FACTOR = 0.92
+ADVANCED_FACTOR = 0.95
 
 
 def wear_percent(mileage_km: float, limit_km: int) -> float:
@@ -22,61 +38,29 @@ def remaining_km(mileage_km: float, limit_km: int) -> float:
     return round(max(limit_km - mileage_km, 0), 1)
 
 
-def check_equipment_status(shoe: dict, runner: dict | None = None) -> dict:
-    """Повертає статус пари кросівок з урахуванням профілю бігуна.
+def mileage_limit(shoe: dict, runner: dict | None) -> int:
+    """Ліміт пробігу пари з поправкою на профіль бігуна."""
+    limit = SHOE_LIMITS.get(shoe.get("category", "daily"), DEFAULT_LIMIT_KM)
+    if runner is None:
+        return limit
+    if runner.get("has_injury_history"):
+        return int(limit * INJURY_FACTOR)
+    if runner.get("weekly_volume_km", 0) > HIGH_VOLUME_KM:
+        return int(limit * HIGH_VOLUME_FACTOR)
+    if runner.get("level") == "advanced":
+        return int(limit * ADVANCED_FACTOR)
+    return limit
 
-    УВАГА (Лаб.1, Завд.4): метод свідомо написаний з глибокою вкладеністю —
-    це еталонний кандидат на рефакторинг (Cognitive Complexity > 15).
-    """
-    if shoe is not None:
-        if shoe.get("retired"):
-            return {
-                "shoe_id": shoe.get("id"),
-                "model": shoe.get("model", "unknown"),
-                "mileage_km": shoe.get("mileage_km", 0.0),
-                "limit_km": 0,
-                "wear_percent": 100.0,
-                "status": "retired",
-                "message": "Пара списана та не використовується в тренуваннях",
-            }
-        else:
-            category = shoe.get("category", "daily")
-            if category in SHOE_LIMITS:
-                limit = SHOE_LIMITS[category]
-            else:
-                limit = DEFAULT_LIMIT_KM
-            if runner is not None:
-                if runner.get("has_injury_history"):
-                    limit = int(limit * 0.85)
-                else:
-                    if runner.get("weekly_volume_km", 0) > 60:
-                        limit = int(limit * 0.92)
-                    else:
-                        if runner.get("level") == "advanced":
-                            limit = int(limit * 0.95)
-            mileage = shoe.get("mileage_km", 0.0)
-            ratio = mileage / limit
-            if ratio >= 1.0:
-                status = "replace"
-                message = "Ресурс вичерпано: амортизація не захищає суглоби, замініть пару"
-            elif ratio >= 0.9:
-                status = "critical"
-                message = "Залишилось менше 10% ресурсу, плануйте покупку нової пари"
-            elif ratio >= 0.75:
-                status = "warning"
-                message = "Пара відпрацювала більшу частину ресурсу, стежте за відчуттями"
-            else:
-                status = "ok"
-                message = "Пара у робочому стані"
-            return {
-                "shoe_id": shoe.get("id"),
-                "model": shoe.get("model", "unknown"),
-                "mileage_km": round(mileage, 1),
-                "limit_km": limit,
-                "wear_percent": wear_percent(mileage, limit),
-                "status": status,
-                "message": message,
-            }
+
+def wear_status(ratio: float) -> tuple[str, str]:
+    """Статус і рекомендація за часткою виробленого ресурсу."""
+    for threshold, status, message in WEAR_THRESHOLDS:
+        if ratio >= threshold:
+            return status, message
+    return "ok", "Пара у робочому стані"
+
+
+def unknown_shoe_status() -> dict:
     return {
         "shoe_id": None,
         "model": "unknown",
@@ -85,6 +69,40 @@ def check_equipment_status(shoe: dict, runner: dict | None = None) -> dict:
         "wear_percent": 0.0,
         "status": "unknown",
         "message": "Пара не знайдена",
+    }
+
+
+def retired_shoe_status(shoe: dict) -> dict:
+    return {
+        "shoe_id": shoe.get("id"),
+        "model": shoe.get("model", "unknown"),
+        "mileage_km": shoe.get("mileage_km", 0.0),
+        "limit_km": 0,
+        "wear_percent": 100.0,
+        "status": "retired",
+        "message": "Пара списана та не використовується в тренуваннях",
+    }
+
+
+def check_equipment_status(shoe: dict, runner: dict | None = None) -> dict:
+    """Повертає статус пари кросівок з урахуванням профілю бігуна."""
+    if shoe is None:
+        return unknown_shoe_status()
+    if shoe.get("retired"):
+        return retired_shoe_status(shoe)
+
+    limit = mileage_limit(shoe, runner)
+    mileage = shoe.get("mileage_km", 0.0)
+    status, message = wear_status(mileage / limit)
+
+    return {
+        "shoe_id": shoe.get("id"),
+        "model": shoe.get("model", "unknown"),
+        "mileage_km": round(mileage, 1),
+        "limit_km": limit,
+        "wear_percent": wear_percent(mileage, limit),
+        "status": status,
+        "message": message,
     }
 
 
