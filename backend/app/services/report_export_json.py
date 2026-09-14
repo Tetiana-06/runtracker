@@ -1,19 +1,8 @@
-"""ПОРУШЕННЯ №2 (Лаб.1, Завд.3) — умова на ВЕСЬ КОД (Overall Code): дублювання.
-
-Як використати:
-  1) створіть ДВА файли у backend/app/services/:
-        report_export_csv.py
-        report_export_json.py
-  2) вставте в кожен з них увесь блок, що нижче, змінивши лише назву функції
-     (build_csv_report / build_json_report) — тіло залиште однаковим;
-  3) закомітьте та запустіть сканування: Duplicated Lines % перевищить поріг 3%.
- чим більший блок, тим надійніше спрацює детектор
-"""
 
 TYPE_WEIGHTS = {"easy": 1.0, "long": 1.3, "tempo": 1.6, "intervals": 1.9, "race": 2.2}
 
 
-def build_csv_report(runs: list[dict]) -> dict:
+def build_json_report(runs: list[dict]) -> dict:
     """Зведення по тренуваннях для експорту."""
     total_distance = 0.0
     total_time = 0
