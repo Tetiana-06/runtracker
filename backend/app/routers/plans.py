@@ -11,6 +11,8 @@ from app.schemas import PlanOut, PlanRequest
 from app.services.pace import RACE_DISTANCES, predict_race_time, split_table
 from app.services.plans import generate_training_plan, plan_volume
 
+#from app.services.weather_client import get_current_weather_unprotected
+
 router = APIRouter(prefix="/api/plans", tags=["plans"])
 
 
@@ -86,4 +88,30 @@ def race_forecast(
         "distance_km": target,
         "predicted_time_sec": predicted,
         "splits": split_table(target, predicted),
+    }
+
+
+
+
+#@router.get("/weather-plan")
+#def get_weather_adjusted_plan():
+    """Отримання погодних умов для планування тренування."""
+    # Стан ДО захисту:
+    weather_data = get_current_weather_unprotected()
+    return {
+        "status": "success",
+        "weather": weather_data,
+        "message": "План адаптовано під поточну погоду"
+    }
+
+from app.services.weather_client import get_weather_with_resilience
+
+@router.get("/weather-plan")
+def get_weather_adjusted_plan():
+    """Отримання погодних умов із гарантованою відмовостійкістю."""
+    weather_data = get_weather_with_resilience()
+    return {
+        "status": "success",
+        "weather": weather_data,
+        "message": "План успішно згенеровано (із підтримкою Graceful Degradation)"
     }
