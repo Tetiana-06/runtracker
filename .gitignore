@@ -1,14 +1,40 @@
+# Python artifacts
 __pycache__/
 *.py[cod]
-.venv/
-venv/
-*.db
+.pytest_cache/
 .coverage
 coverage.xml
 htmlcov/
-.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+backend/venv/
+source/
+
+# SQLite databases
+*.db
+
+# SonarQube & IDE configs
 .scannerwork/
 .idea/
 .vscode/
-.env
+
+# Node.js
 node_modules/
+
+# =====================================================================
+# SECRETS & ENVIRONMENT PREVENTION RULES (Lab 3: Secrets Protection)
+# =====================================================================
+# Ignore local environment files containing secrets
+.env
+.env.local
+.env.*.local
+*.secret
+*.key
+*.pem
+*.token
+
+# Allow environment templates
+!.env.example
+!tracker/.env.example
