@@ -51,19 +51,39 @@ def week_shape(week: int, weeks: int, long_run_km: float) -> tuple[str, float]:
     return "build", distance
 
 
+# Довідник профілів тренувань: (номер тренування, рівень, фаза) -> (тип, частка).
+# Усі комбінації, яких немає в таблиці, — легкий біг (DEFAULT_PROFILE).
+DEFAULT_PROFILE = ("easy", 0.5)
+SESSION_PROFILES = {
+    (1, "beginner", "build"): ("easy", 0.45),
+    (1, "beginner", "recovery"): ("easy", 0.45),
+    (1, "beginner", "taper"): ("easy", 0.45),
+    (1, "intermediate", "build"): ("tempo", 0.6),
+    (1, "intermediate", "recovery"): ("recovery", 0.4),
+    (1, "intermediate", "taper"): ("easy", 0.4),
+    (1, "advanced", "build"): ("tempo", 0.6),
+    (1, "advanced", "recovery"): ("recovery", 0.4),
+    (1, "advanced", "taper"): ("recovery", 0.4),
+    (2, "beginner", "build"): ("long", 1.0),
+    (2, "beginner", "recovery"): ("long", 1.0),
+    (2, "beginner", "taper"): ("long", 0.7),
+    (2, "intermediate", "build"): ("long", 1.0),
+    (2, "intermediate", "recovery"): ("long", 1.0),
+    (2, "intermediate", "taper"): ("long", 0.7),
+    (2, "advanced", "build"): ("long", 1.0),
+    (2, "advanced", "recovery"): ("long", 1.0),
+    (2, "advanced", "taper"): ("long", 0.7),
+    (3, "beginner", "recovery"): ("recovery", 0.4),
+    (3, "intermediate", "recovery"): ("recovery", 0.4),
+    (3, "advanced", "recovery"): ("recovery", 0.4),
+    (3, "advanced", "build"): ("intervals", 0.55),
+    (4, "advanced", "build"): ("tempo", 0.65),
+}
+
+
 def session_profile(session: int, level: str, phase: str) -> tuple[str, float]:
     """Тип тренування та його частка від довгого бігу тижня."""
-    if session == 0:
-        return "easy", 0.5
-    if session == 2:
-        return "long", 1.0
-    if session == 1:
-        if level == "beginner":
-            return "easy", 0.45
-        return ("tempo", 0.6) if phase == "build" else ("recovery", 0.4)
-    if phase == "build" and level == "advanced":
-        return "intervals", 0.55
-    return "easy", 0.5
+    return SESSION_PROFILES.get((session, level, phase), DEFAULT_PROFILE)
 
 
 def build_workout(session: int, level: str, phase: str, long_run_km: float) -> dict:
@@ -104,3 +124,22 @@ def generate_training_plan(runner: dict, target_distance_km: float, weeks: int) 
 def plan_volume(plan: list[dict]) -> float:
     """Сумарний обсяг усього плану в кілометрах."""
     return round(sum(week["total_km"] for week in plan), 1)
+
+
+
+# Довідник інтенсивності: (рівень, фаза) -> інтенсивність; решта — "low".
+INTENSITY_BY_PROFILE = {
+    ("beginner", "build"): "low",
+    ("beginner", "recovery"): "very_low",
+    ("beginner", "taper"): "very_low",
+    ("intermediate", "build"): "medium",
+    ("intermediate", "recovery"): "low",
+    ("intermediate", "taper"): "low",
+    ("advanced", "build"): "high",
+    ("advanced", "recovery"): "medium",
+}
+
+
+def session_intensity(level: str, phase: str) -> str:
+    """Інтенсивність тижня залежно від рівня бігуна та фази плану."""
+    return INTENSITY_BY_PROFILE.get((level, phase), "low")
