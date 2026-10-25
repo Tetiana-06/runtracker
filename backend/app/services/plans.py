@@ -124,3 +124,22 @@ def generate_training_plan(runner: dict, target_distance_km: float, weeks: int) 
 def plan_volume(plan: list[dict]) -> float:
     """Сумарний обсяг усього плану в кілометрах."""
     return round(sum(week["total_km"] for week in plan), 1)
+
+
+
+# Довідник інтенсивності: (рівень, фаза) -> інтенсивність; решта — "low".
+INTENSITY_BY_PROFILE = {
+    ("beginner", "build"): "low",
+    ("beginner", "recovery"): "very_low",
+    ("beginner", "taper"): "very_low",
+    ("intermediate", "build"): "medium",
+    ("intermediate", "recovery"): "low",
+    ("intermediate", "taper"): "low",
+    ("advanced", "build"): "high",
+    ("advanced", "recovery"): "medium",
+}
+
+
+def session_intensity(level: str, phase: str) -> str:
+    """Інтенсивність тижня залежно від рівня бігуна та фази плану."""
+    return INTENSITY_BY_PROFILE.get((level, phase), "low")
