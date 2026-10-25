@@ -53,6 +53,14 @@ def week_shape(week: int, weeks: int, long_run_km: float) -> tuple[str, float]:
 
 def session_profile(session: int, level: str, phase: str) -> tuple[str, float]:
     """Тип тренування та його частка від довгого бігу тижня."""
+    if phase == "taper" and session == 2:
+        return "long", 0.7
+    if session == 1 and level == "intermediate" and phase == "taper":
+        return "easy", 0.4
+    if session == 3 and phase == "recovery":
+        return "recovery", 0.4
+    if session == 4 and level == "advanced" and phase == "build":
+        return "tempo", 0.65
     if session == 0:
         return "easy", 0.5
     if session == 2:
