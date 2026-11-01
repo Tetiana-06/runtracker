@@ -199,4 +199,4 @@ def process_run_workout(workout_data: Dict[str, Any]) -> Dict[str, Any]:
     # Фіксація статусу успішної обробки
     result["status"] = "processed"
     return result
-# churn-sim: 7
+# churn-sim: 8
