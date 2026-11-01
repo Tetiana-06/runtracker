@@ -1,0 +1,12 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.8, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Tetiana\Downloads\runtracker_\runtracker\backend
+configfile: pytest.ini
+plugins: anyio-4.15.1, locust-2.46.7, asyncio-1.4.0, cov-5.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 4 items
+
+tests\test_weather_mutation.py ..                                        [ 50%]
+tests\test_resilience.py ..                                              [100%]
+
+============================== 4 passed in 0.44s ==============================

@@ -30,3 +30,18 @@ def test_fallback_is_not_corrupted_by_caller():
     # Споживач №2 має отримати чисті аварійні дані, а не «спеку 45°C»
     assert second["temperature"] == 18.0
     assert second["is_fallback"] is True
+
+
+def test_value_objects_are_read_only():
+    """Після рефакторингу: Value Objects та fallback неможливо перезаписати."""
+    import dataclasses
+
+    import pytest
+
+    from app.services.weather_client import DEFAULT_POLICY, FALLBACK_SNAPSHOT, FALLBACK_WEATHER
+
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        DEFAULT_POLICY.max_retries = 100
+    with pytest.raises(TypeError):
+        FALLBACK_WEATHER["temperature"] = 45.0
+    assert FALLBACK_SNAPSHOT.as_dict() is not FALLBACK_SNAPSHOT.as_dict()
