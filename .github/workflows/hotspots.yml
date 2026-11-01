@@ -1,0 +1,42 @@
+name: Hotspots Audit
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  hotspots:
+    name: Складність + Churn -> Hotspots
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # повна історія Git потрібна для підрахунку комітів
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Встановити CLI-сканер складності
+        run: pip install radon==6.0.1
+
+      - name: Сканування складності (JSON)
+        run: |
+          mkdir -p reports
+          radon cc -j backend/app tracker > reports/cc.json
+          radon hal -j backend/app tracker > reports/hal.json
+
+      - name: Code Churn за 90 днів (git log)
+        run: |
+          git log --since="90 days ago" --format=format: --name-only \
+            | grep -v '^$' | sort | uniq -c | sort -nr > reports/churn.txt
+          head -20 reports/churn.txt
+
+      - name: Побудова матриці Hotspots
+        run: python scripts/hotspots.py reports | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Зберегти звіт як артефакт збірки
+        uses: actions/upload-artifact@v4
+        with:
+          name: hotspots-report
+          path: reports/
