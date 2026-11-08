@@ -279,8 +279,16 @@ class SonarMockHandler(BaseHTTPRequestHandler):
         pass
 
 
-def run_server(port: int = 9000):
-    server = HTTPServer(("localhost", port), SonarMockHandler)
+def run_server(default_port: int = 9000):
+    port = default_port
+    for arg in sys.argv:
+        if arg.isdigit():
+            port = int(arg)
+    try:
+        server = HTTPServer(("localhost", port), SonarMockHandler)
+    except OSError:
+        port = 9001
+        server = HTTPServer(("localhost", port), SonarMockHandler)
     print(f"[SERVER] SonarQube Mock Web API running on http://localhost:{port}/")
     print("Press Ctrl+C to stop.")
     try:
