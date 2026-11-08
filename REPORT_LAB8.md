@@ -19,21 +19,20 @@
 
 ### Команди CLI (curl / Windows PowerShell Invoke-RestMethod):
 
-```powershell
-# 1. Core Domain — бізнес-правила планів тренувань (plans.py)
-curl -s "http://localhost:9000/api/measures/component?component=runtracker:backend/app/services/plans.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class"
+> **Примітка щодо авторизації:** Якщо запит надсилається до сервера SonarQube із вимогою авторизації (`Force user authentication`), передається токен через HTTP Basic Auth. Якщо використовується локальний емулятор API на порту `:9001` (`python scripts/lab8_metrics.py --serve 9001`), запити виконуються без додаткових заголовків.
 
-# Або у PowerShell:
-Invoke-RestMethod -Uri "http://localhost:9000/api/measures/component?component=runtracker:backend/app/services/plans.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class" | ConvertTo-Json -Depth 4
+```powershell
+# Варіант А: Запит до локального емулятора API (порт :9001, без авторизації)
+Invoke-RestMethod -Uri "http://localhost:9001/api/measures/component?component=runtracker:backend/app/services/plans.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class" | ConvertTo-Json -Depth 4
 
 # 2. Infrastructure — інтеграція із зовнішнім погодним сервісом (weather_client.py)
-curl -s "http://localhost:9000/api/measures/component?component=runtracker:backend/app/services/weather_client.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class"
+Invoke-RestMethod -Uri "http://localhost:9001/api/measures/component?component=runtracker:backend/app/services/weather_client.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class" | ConvertTo-Json -Depth 4
 
 # 3. Utility / DTO — схеми валідації Pydantic (schemas.py)
-curl -s "http://localhost:9000/api/measures/component?component=runtracker:backend/app/schemas.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class"
+Invoke-RestMethod -Uri "http://localhost:9001/api/measures/component?component=runtracker:backend/app/schemas.py&metricKeys=class_complexity,coupling_between_objects,lcom4,depth_in_tree,response_for_class" | ConvertTo-Json -Depth 4
 
 # 4. Global MOOD — загальносистемні коефіцієнти проєкту (runtracker)
-curl -s "http://localhost:9000/api/measures/component?component=runtracker&metricKeys=method_hiding_factor,attribute_hiding_factor,coupling_factor"
+Invoke-RestMethod -Uri "http://localhost:9001/api/measures/component?component=runtracker&metricKeys=method_hiding_factor,attribute_hiding_factor,coupling_factor" | ConvertTo-Json -Depth 4
 ```
 
 Скрипт автоматизації видобутку та емуляції SonarQube REST API розроблено у [`scripts/lab8_metrics.py`](file:///C:/Users/Tetiana/Downloads/runtracker_/runtracker/scripts/lab8_metrics.py).
