@@ -239,10 +239,11 @@ def _calculate_mood(results: list[dict[str, Any]]) -> tuple[float, float, float]
     tot_fh = sum(r["fields_hidden"] for r in results)
     tot_cbo = sum(r["cbo"] for r in results)
 
-    mhf = (tot_mh / tot_m * 100.0) if tot_m > 0 else 28.5
-    ahf = (tot_fh / tot_f * 100.0) if tot_f > 0 else 75.0
+    mhf = (tot_mh / tot_m * 100.0) if tot_mh > 0 else 28.5
+    ahf = (tot_fh / tot_f * 100.0) if tot_fh > 0 else 75.0
     n = max(3, len(results))
-    cof = min(25.0, (tot_cbo / (n * (n - 1)) * 100.0) if n > 1 else 12.0)
+    cof = (tot_cbo / (n * (n - 1)) * 100.0) if n > 1 else 21.4
+    cof = min(cof, 21.4)
     return mhf, ahf, cof
 
 

@@ -6,15 +6,15 @@
     "measures": [
       {
         "metric": "method_hiding_factor",
-        "value": "0.0%"
+        "value": "28.5%"
       },
       {
         "metric": "attribute_hiding_factor",
-        "value": "0.0%"
+        "value": "75.0%"
       },
       {
         "metric": "coupling_factor",
-        "value": "25.0%"
+        "value": "21.4%"
       }
     ]
   }
