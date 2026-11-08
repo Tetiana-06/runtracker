@@ -1,0 +1,30 @@
+{
+  "component": {
+    "key": "runtracker:backend/app/services/plans.py",
+    "name": "plans.py",
+    "qualifier": "FIL",
+    "path": "backend/app/services/plans.py",
+    "measures": [
+      {
+        "metric": "class_complexity",
+        "value": "8"
+      },
+      {
+        "metric": "coupling_between_objects",
+        "value": "1"
+      },
+      {
+        "metric": "lcom4",
+        "value": "1"
+      },
+      {
+        "metric": "depth_in_tree",
+        "value": "1"
+      },
+      {
+        "metric": "response_for_class",
+        "value": "8"
+      }
+    ]
+  }
+}

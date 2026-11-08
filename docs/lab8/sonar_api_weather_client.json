@@ -1,0 +1,30 @@
+{
+  "component": {
+    "key": "runtracker:backend/app/services/weather_client.py",
+    "name": "weather_client.py",
+    "qualifier": "FIL",
+    "path": "backend/app/services/weather_client.py",
+    "measures": [
+      {
+        "metric": "class_complexity",
+        "value": "4"
+      },
+      {
+        "metric": "coupling_between_objects",
+        "value": "7"
+      },
+      {
+        "metric": "lcom4",
+        "value": "2"
+      },
+      {
+        "metric": "depth_in_tree",
+        "value": "1"
+      },
+      {
+        "metric": "response_for_class",
+        "value": "7"
+      }
+    ]
+  }
+}
