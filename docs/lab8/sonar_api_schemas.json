@@ -1,0 +1,30 @@
+{
+  "component": {
+    "key": "runtracker:backend/app/schemas.py",
+    "name": "schemas.py",
+    "qualifier": "FIL",
+    "path": "backend/app/schemas.py",
+    "measures": [
+      {
+        "metric": "class_complexity",
+        "value": "0"
+      },
+      {
+        "metric": "coupling_between_objects",
+        "value": "3"
+      },
+      {
+        "metric": "lcom4",
+        "value": "1"
+      },
+      {
+        "metric": "depth_in_tree",
+        "value": "2"
+      },
+      {
+        "metric": "response_for_class",
+        "value": "0"
+      }
+    ]
+  }
+}

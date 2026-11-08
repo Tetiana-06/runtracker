@@ -1,0 +1,21 @@
+{
+  "component": {
+    "key": "runtracker",
+    "name": "RunTracker",
+    "qualifier": "TRK",
+    "measures": [
+      {
+        "metric": "method_hiding_factor",
+        "value": "28.5%"
+      },
+      {
+        "metric": "attribute_hiding_factor",
+        "value": "75.0%"
+      },
+      {
+        "metric": "coupling_factor",
+        "value": "21.4%"
+      }
+    ]
+  }
+}

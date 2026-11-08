@@ -1,0 +1,23 @@
+======================================================================
+КРАШ-ТЕСТ: КАСКАДНИЙ ЗЛАМ ВЕРТИКАЛЬНОЇ ІЄРАРХІЇ (DIT=3) - СТАН FAIL
+======================================================================
+Команда:
+python -c "from docs.lab8.inheritance_hierarchy import AdvancedRunnerDashboardExporter; d = AdvancedRunnerDashboardExporter(); d.build_dashboard('Olek', {})"
+
+Результат виконання:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "docs/lab8/inheritance_hierarchy.py", line 71, in build_dashboard
+    return self.render_header(f"Runner: {runner_name}")
+  File "docs/lab8/inheritance_hierarchy.py", line 59, in render_header
+    return f"<div class='dashboard-header'>{super().render_header(title)}</div>"
+  File "docs/lab8/inheritance_hierarchy.py", line 44, in render_header
+    return f"<h1>{super().render_header(title)}</h1>"
+TypeError: BaseReportExporter.render_header() missing 1 required positional argument: 'context'
+
+АНАЛІЗ АРХІТЕКТУРНОГО ЗБОРУ (Inheritance Fragility / Fragile Base Class):
+У базовому класі BaseReportExporter було змінено сигнатуру методу render_header(title, context).
+Оскільки HtmlReportExporter та AdvancedRunnerDashboardExporter успадковують базовий клас
+через жорстке наслідування та викликають super().render_header(title),
+точкова зміна предка "прострілила" вниз по всьому спадковому дереву (DIT=3) і зламала нащадків.
+Статус: FAIL

@@ -1,0 +1,23 @@
+======================================================================
+КРАШ-ТЕСТ: SHOTGUN SURGERY У КЛАСІ-МУТАНТІ (God Object) - СТАН FAIL
+======================================================================
+Команда:
+python -c "from docs.lab8.god_object import RunnerActivityGodService, ChangedModernWeatherClient; s = RunnerActivityGodService(); s.weather_client = ChangedModernWeatherClient(); s.process_full_activity(1, 'runner@test.ua', 10, 3000, 150, 100)"
+
+Результат виконання:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Tetiana\Downloads\runtracker_\runtracker\docs\lab8\god_object.py", line 126, in process_full_activity
+    weather_factor = self.fetch_weather_and_adapt_pace()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Tetiana\Downloads\runtracker_\runtracker\docs\lab8\god_object.py", line 85, in fetch_weather_and_adapt_pace
+    temp = data["temperature"]
+           ~~~~^^^^^^^^^^^^^^^
+KeyError: 'temperature'
+
+АНАЛІЗ АРХІТЕКТУРНОГО ЗБОРУ:
+Клас RunnerActivityGodService напряму читає словник стороннього клієнта:
+`temp = data["temperature"]`.
+Коли постачальник змінив формат на 'temp_c', сталася лавиноподібна відмова
+всієї обробки забігу. Принцип Dependency Inversion порушено.
+Статус: FAIL
