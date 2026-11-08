@@ -1,4 +1,4 @@
-"""Точка входу FastAPI-застосунку RunTracker."""
+"""Точка входу FastAPI-застосунку RunTracker з підтримкою Privacy by Design."""
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -11,9 +11,14 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.database import init_db
-from app.routers import plans, runners, runs, shoes
+from app.privacy.logging_config import PrivacyLoggingMiddleware, setup_privacy_logging
+from app.routers import plans, privacy, runners, runs, shoes
+
+# Ініціалізація централізованого безпечного логування
+setup_privacy_logging()
 
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -23,6 +28,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title=settings.app_name, version=settings.version, lifespan=lifespan)
+
+# Реєстрація Middleware для безпечного логування HTTP-запитів без витоку тіла та PII
+app.add_middleware(PrivacyLoggingMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,6 +44,7 @@ app.include_router(runners.router)
 app.include_router(runs.router)
 app.include_router(shoes.router)
 app.include_router(plans.router)
+app.include_router(privacy.router)
 
 
 @app.get("/api/health")

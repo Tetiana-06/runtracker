@@ -9,7 +9,7 @@ export const options = {
   ],
   thresholds: {
     // SLO 1: 95% запитів мають виконуватися швидше 250 мс
-    http_req_duration: ['p(95)<250'],
+    http_req_duration: ['p(95)<12'],
     // SLO 2: частка помилок менше 1%
     http_req_failed: ['rate<0.01'],
   },
