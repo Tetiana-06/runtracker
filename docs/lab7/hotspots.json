@@ -1,0 +1,142 @@
+[
+  {
+    "file": "tracker/analytics.py",
+    "max_cc": 6,
+    "effort": 3104.1,
+    "commits_90d": 12,
+    "category": "Hotspot (червона)"
+  },
+  {
+    "file": "backend/app/services/plans.py",
+    "max_cc": 6,
+    "effort": 1421.7,
+    "commits_90d": 6,
+    "category": "Active (зелена)"
+  },
+  {
+    "file": "backend/app/services/pace.py",
+    "max_cc": 3,
+    "effort": 1000.4,
+    "commits_90d": 4,
+    "category": "Active (зелена)"
+  },
+  {
+    "file": "backend/app/services/gear.py",
+    "max_cc": 5,
+    "effort": 1076.9,
+    "commits_90d": 2,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/services/weather_client.py",
+    "max_cc": 4,
+    "effort": 225.2,
+    "commits_90d": 2,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/routers/plans.py",
+    "max_cc": 2,
+    "effort": 68.3,
+    "commits_90d": 2,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/services/report_export_csv.py",
+    "max_cc": 1,
+    "effort": 0,
+    "commits_90d": 2,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/services/report_export_json.py",
+    "max_cc": 1,
+    "effort": 0,
+    "commits_90d": 2,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/services/heart_rate.py",
+    "max_cc": 7,
+    "effort": 1383.8,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/services/analytics.py",
+    "max_cc": 6,
+    "effort": 1248.5,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/routers/runs.py",
+    "max_cc": 5,
+    "effort": 510.3,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/routers/shoes.py",
+    "max_cc": 3,
+    "effort": 93.3,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/services/report_builder.py",
+    "max_cc": 7,
+    "effort": 86.0,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/schemas.py",
+    "max_cc": 1,
+    "effort": 85.3,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/models.py",
+    "max_cc": 1,
+    "effort": 18.0,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "tracker/config.py",
+    "max_cc": 2,
+    "effort": 11.6,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/main.py",
+    "max_cc": 1,
+    "effort": 7.0,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/routers/runners.py",
+    "max_cc": 2,
+    "effort": 2.4,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/config.py",
+    "max_cc": 2,
+    "effort": 0,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  },
+  {
+    "file": "backend/app/database.py",
+    "max_cc": 1,
+    "effort": 0,
+    "commits_90d": 1,
+    "category": "Stable (сіра)"
+  }
+]

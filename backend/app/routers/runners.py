@@ -1,5 +1,6 @@
 """Маршрути профілю бігуна та пульсових зон."""
 
+import json
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -20,13 +21,22 @@ def get_runner_or_404(db: Session, runner_id: int) -> Runner:
 
 @router.post("", response_model=RunnerOut, status_code=status.HTTP_201_CREATED)
 def create_runner(payload: RunnerCreate, db: Session = Depends(get_db)) -> Runner:
+    prefs_str = (
+        json.dumps(payload.preferences)
+        if isinstance(payload.preferences, dict)
+        else payload.preferences
+    )
     runner = Runner(
         name=payload.name,
+        email=payload.email,
+        phone=payload.phone,
+        password_hash=f"pbkdf2_sha256$mock${payload.password}" if payload.password else None,
         age=payload.age,
         resting_hr=payload.resting_hr,
         level=payload.level,
         weekly_volume_km=payload.weekly_volume_km,
         has_injury_history=int(payload.has_injury_history),
+        preferences=prefs_str or "{}",
     )
     db.add(runner)
     db.commit()

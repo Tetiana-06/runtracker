@@ -1,0 +1,9 @@
+backend/app/services/weather_client.py
+    F 71:0 _fetch_once - A (4)
+    F 89:0 get_weather_with_resilience - A (3)
+    C 28:0 RetryPolicy - A (2)
+    C 47:0 WeatherSnapshot - A (2)
+    M 35:4 RetryPolicy.attempts - A (1)
+    M 38:4 RetryPolicy.is_last - A (1)
+    M 41:4 RetryPolicy.backoff - A (1)
+    M 53:4 WeatherSnapshot.as_dict - A (1)

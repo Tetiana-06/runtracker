@@ -16,9 +16,9 @@ import os
 import sys
 import pytest
 
-# =====================================================================
+
 # НАЛАШТУВАННЯ ШЛЯХІВ ІМПОРТУ (PYTHONPATH)
-# =====================================================================
+
 # Додаємо директорію модуля та батьківську директорію до sys.path,
 # щоб тести гарантовано запускалися як із кореня репозиторію (через pytest),
 # так і безпосередньо з папки tracker без помилок ImportError.
@@ -43,9 +43,9 @@ class TestWorkoutServiceSafetyNet:
     Перевіряє всі гілки, граничні умови, виняткові ситуації та розрахунки.
     """
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 1: Валідація структури та порожніх вхідних даних
-    # -----------------------------------------------------------------
+
     def test_invalid_input_structure(self):
         """
         Тестування реакції системи на некоректний тип або порожні дані.
@@ -69,9 +69,9 @@ class TestWorkoutServiceSafetyNet:
         res_invalid_type = process_run_workout(["некоректні", "дані"])
         assert "Invalid data format" in res_invalid_type["warnings"]
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 2: Граничні випадки для дистанції та тривалості
-    # -----------------------------------------------------------------
+
     def test_invalid_distance_or_duration(self):
         """
         Тестування некоректних або недопустимих фізичних показників:
@@ -95,9 +95,9 @@ class TestWorkoutServiceSafetyNet:
         res_both_neg = process_run_workout({"distance": -2.0, "duration": -10.0})
         assert "Non-positive distance or duration" in res_both_neg["warnings"]
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 3: Категоризація темпу (Pace Categories) та граничні переходи
-    # -----------------------------------------------------------------
+
     @pytest.mark.parametrize(
         "duration,distance,expected_category,case_description",
         [
@@ -126,9 +126,9 @@ class TestWorkoutServiceSafetyNet:
         result = process_run_workout(data)
         assert result["pace_category"] == expected_category, f"Помилка класифікації: {case_description}"
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 4: Пульсові зони серцевого ритму (Heart Rate Zones)
-    # -----------------------------------------------------------------
+
     @pytest.mark.parametrize(
         "heart_rate,expected_zone,case_description",
         [
@@ -165,9 +165,9 @@ class TestWorkoutServiceSafetyNet:
         result = process_run_workout(data)
         assert result["zones"] == [], "Без пульсометра список зон повинен бути порожнім"
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 5: Вплив погодних факторів (Weather Conditions)
-    # -----------------------------------------------------------------
+
     @pytest.mark.parametrize(
         "temperature,humidity,expected_warning,score_penalty,description",
         [
@@ -199,9 +199,9 @@ class TestWorkoutServiceSafetyNet:
             assert result["warnings"] == [], f"Для комфортної погоди попередження відсутні ({description})"
         assert result["score"] == score_penalty, f"Неправильний штраф за погоду ({description})"
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 6: Розрахунок кілометрових відрізків (Splits) та загального Score
-    # -----------------------------------------------------------------
+
     def test_splits_calculation_and_positive_score(self):
         """
         Перевірка аналізу сплітів (проміжних кілометрів):
@@ -225,9 +225,9 @@ class TestWorkoutServiceSafetyNet:
         assert result["score"] == 4, "Загальний рахунок сплітів повинен дорівнювати 4"
         assert result["status"] == "processed", "Статус після успішної обробки має бути 'processed'"
 
-    # -----------------------------------------------------------------
+
     # ТЕСТ 7: Інтеграційний тест комплексного сценарію
-    # -----------------------------------------------------------------
+
     def test_full_integrated_workout_processing(self):
         """
         Комплексний тест повної обробки типового бігового тренування:
