@@ -35,3 +35,29 @@ def test_race_forecast_rejects_unknown_race():
         params={"known_distance_km": 10, "known_time_sec": 3000, "race": "ultra"},
     )
     assert response.status_code == 400
+
+
+def test_runs_intensity_breakdown():
+    # Створюємо бігуна
+    r_resp = client.post("/api/runners", json={"name": "Бігун для аналізу", "age": 28})
+    runner_id = r_resp.json()["id"]
+
+    # Додаємо тренування
+    client.post(
+        "/api/runs",
+        json={
+            "runner_id": runner_id,
+            "distance_km": 10.0,
+            "duration_sec": 3000,
+            "avg_hr": 150,
+            "workout_type": "tempo",
+        },
+    )
+
+    response = client.get(f"/api/runs/summary/intensity?runner_id={runner_id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["runner_id"] == runner_id
+    assert data["total_recorded"] >= 1
+    assert data["intensity_distribution"]["tempo"] >= 1
+

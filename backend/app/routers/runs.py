@@ -97,3 +97,21 @@ def insights(runner_id: int, db: Session = Depends(get_db)) -> dict:
         "total_runs": len(runs),
         "total_km": round(sum(run["distance_km"] for run in runs), 1),
     }
+
+
+@router.get("/summary/intensity")
+def intensity_breakdown(runner_id: int, db: Session = Depends(get_db)) -> dict:
+    runs = db.query(Run).filter(Run.runner_id == runner_id).all()
+    distribution = {"easy": 0, "tempo": 0, "intervals": 0, "long": 0, "other": 0}
+    for r in runs:
+        wt = (r.workout_type or "other").lower()
+        if wt in distribution:
+            distribution[wt] += 1
+        else:
+            distribution["other"] += 1
+    return {
+        "runner_id": runner_id,
+        "total_recorded": len(runs),
+        "intensity_distribution": distribution,
+    }
+
