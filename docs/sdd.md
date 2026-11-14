@@ -95,7 +95,7 @@ flowchart TB
 - **Інфраструктурна прив'язка:** Зберігання в таблиці `runners` ([isd.md](isd.md#3-сховища-даних-та-робочі-середовища)).
 
 ### 3.2. Модуль тренувань (`app.routers.runs` & `app.services.pace` / `analytics`)
-- **Відповідальність:** Реєстрація фактів бігових занять (дистанція, тривалість, пульс, тип), розрахунок середнього темпу (хв/км), обчислення щотижневого кілометражу, виявлення особистих рекордів (PB).
+- **Відповідальність:** Реєстрація фактів бігових занять (дистанція, тривалість, пульс, тип), розрахунок середнього темпу (хв/км), обчислення щотижневого кілометражу, виявлення особистих рекордів (PB) та аналітичний розподіл навантаження за категоріями інтенсивності (*easy*, *tempo*, *intervals*, *long*).
 - **Математична модель:** Прогнозування часу на цільовій дистанції за формулою Пітера Рігеля: $T_2 = T_1 \times (D_2 / D_1)^{1.06}$.
 - **Залежності:** `app.services.pace`, `app.services.gear`, `app.models.Run`, `app.models.Shoe`.
 - **Інфраструктурна прив'язка:** Таблиця `runs` із foreign key на `runners` та `shoes`.
@@ -206,6 +206,7 @@ erDiagram
 | `GET` | `/api/runs/{id}/details` | Детальна інформація та темп | Path: `id` | `RunDetailsOut` |
 | `GET` | `/api/runs/summary/weekly` | Тижневе зведення кілометражу | Query: `runner_id` | `list[WeeklySummary]` |
 | `GET` | `/api/runs/summary/insights` | Аналітичні інсайти та рекорди | Query: `runner_id` | `InsightsOut` |
+| `GET` | `/api/runs/summary/intensity`| Розподіл навантаження за зонами | Query: `runner_id` | `dict` (JSON) |
 | `POST` | `/api/shoes` | Додавання нової пари кросівок | `ShoeCreate` (JSON) | `ShoeOut` (HTTP 201) |
 | `GET` | `/api/shoes` | Перелік екіпірування бігуна | Query: `runner_id` | `list[ShoeOut]` |
 | `GET` | `/api/shoes/{id}/status` | Статус зносу кросівок | Path: `id` | `ShoeStatusOut` |
