@@ -1,0 +1,20 @@
+dce5ac73c|2026-01-19|Alan Rominger|Apply new rules from black update (#16232)
+a20f299cd|2025-12-01|Seth Foster|Add x-ai-description to schema (#16186)
+f5785976b|2023-02-01|Alan Rominger|Update to comply with new black rules
+dca27b59c|2022-09-19|John Westcott IV|Fixing is_detached methods' filters
+b501b30db|2022-09-15|John Westcott IV|Changing label functions to account for new relationships
+ef90adb67|2022-09-15|Alan Rominger|Complete consolidation of the label views
+1e625ed58|2022-02-03|Jeff Bradberry|Fix up deprecation warning about re_path() replacing urls()
+a3a216f91|2022-01-31|Jeff Bradberry|Fix up new Django 3.0 deprecations
+326d12382|2022-02-14|Alex Corey|Adds Inventory labels (#11558)
+c2ef0a650|2021-03-19|Ryan Petrello|move code linting to a stricter pep8-esque auto-formatting tool, black
+6d6bbbb62|2017-11-09|Wayne Witzel III|Update URL strucuture, fixed string based calls
+f25391fe8|2017-03-02|Aaron Tan|Implement named URL feature.
+95ea370e5|2017-03-29|Ryan Petrello|add API versioning for /api/v2/
+9e4655419|2016-11-15|Aaron Tan|Fix flake8 E302 errors.
+5258c2a04|2016-11-15|AlanCoding|Remove in-place operations on model in test_label unit test
+1925742da|2016-04-26|Chris Meyers|delete orphaned labels when jt or j deleted
+2f18a9f2c|2016-04-25|Chris Meyers|delete label on last disassociate
+5bf83e8b6|2016-04-11|Chris Meyers|cascade delete labels
+68c14976d|2016-04-05|Chris Meyers|label cleanup periodic job
+d2de21ee5|2016-03-22|Chris Meyers|job template labels init implementation

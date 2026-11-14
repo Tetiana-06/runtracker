@@ -1,0 +1,1 @@
+{"component":{"id":"AZDmQK2Oguo2e2_1MUye","key":"ansible_awx","name":"awx","qualifier":"TRK","measures":[{"metric":"ncloc","value":"72727"},{"metric":"sqale_index","value":"10614","bestValue":false},{"metric":"sqale_rating","value":"1.0","bestValue":true}]}}

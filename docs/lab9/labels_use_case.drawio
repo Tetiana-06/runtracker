@@ -1,0 +1,44 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="AWX Labels Use Cases">
+    <mxGraphModel dx="1000" dy="600" grid="1" gridSize="10" page="1" pageWidth="900" pageHeight="600">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="sys" value="AWX — Labels module" style="rounded=0;whiteSpace=wrap;verticalAlign=top;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="40" width="380" height="500" as="geometry"/>
+        </mxCell>
+        <mxCell id="a1" value="AWX User (Web UI)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="40" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="a2" value="API client / awx CLI / Ansible collection" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="740" y="200" width="40" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="u1" value="UC1 Create label" style="ellipse;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="340" y="80" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="u2" value="UC2 Edit label" style="ellipse;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="340" y="170" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="u3" value="UC3 View / list labels" style="ellipse;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="340" y="260" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="u4" value="UC4 Attach label to resource" style="ellipse;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="340" y="350" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="u5" value="UC5 Detach label (auto-delete if unused)" style="ellipse;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="340" y="440" width="200" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="a1" target="u1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="a1" target="u2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="a1" target="u3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="a1" target="u4"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="a1" target="u5"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e21" edge="1" parent="1" source="a2" target="u1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e22" edge="1" parent="1" source="a2" target="u2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e23" edge="1" parent="1" source="a2" target="u3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e24" edge="1" parent="1" source="a2" target="u4"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e25" edge="1" parent="1" source="a2" target="u5"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
